@@ -1,0 +1,135 @@
+{
+  "metadata": {
+    "title": "US Delivery Service Partner (DSP) Market Dataset",
+    "description": "Market sizing data for the US last-mile DSP segment. Used to model the SortLease pay-per-parcel opportunity.",
+    "updated": "2025-Q4",
+    "sources": [
+      "GlobeNewsWire 2025 — Last-Mile Delivery Market Report",
+      "Straits Research 2025 — US Logistics Market Analysis",
+      "Business Market Insights 2024",
+      "US Bureau of Labor Statistics — Warehouse Wages",
+      "Industry estimates and SortLease deployment data"
+    ],
+    "github": "https://github.com/kapmif/dsp-roi-calculator",
+    "license": "MIT"
+  },
+
+  "market_size": {
+    "us_last_mile_market_2024_usd_billions": 168.74,
+    "us_last_mile_market_2031_usd_billions": 303.59,
+    "cagr_2024_2031_pct": 8.8,
+    "global_last_mile_market_2024_usd_billions": 395.0,
+    "source": "GlobeNewsWire 2025"
+  },
+
+  "dsp_segment": {
+    "total_us_dsps_estimated": 5000,
+    "dsps_without_automation_pct": 95,
+    "dsps_without_automation_count": 4750,
+    "average_daily_parcel_volume": 12000,
+    "volume_range": {
+      "small": { "min": 3000, "max": 8000, "share_pct": 35 },
+      "medium": { "min": 8000, "max": 20000, "share_pct": 45 },
+      "large": { "min": 20000, "max": 50000, "share_pct": 20 }
+    }
+  },
+
+  "labor_costs": {
+    "average_sort_worker_wage_usd_hr": 18.50,
+    "wage_increase_since_2020_pct": 25,
+    "annual_turnover_rate_pct": 40,
+    "workers_per_shift_small_dsp": 4,
+    "workers_per_shift_medium_dsp": 7,
+    "workers_per_shift_large_dsp": 11,
+    "overhead_multiplier": 1.25,
+    "source": "BLS Occupational Employment Statistics + Industry surveys"
+  },
+
+  "manual_sorting_benchmarks": {
+    "cost_per_parcel_range": { "low": 0.22, "high": 0.30, "avg": 0.26 },
+    "mis_sort_rate_pct": 3.0,
+    "error_correction_cost_per_package": { "low": 8, "high": 12, "avg": 10 },
+    "morning_bottleneck_capacity_loss_pct": 17,
+    "parcels_per_worker_per_hour": 350
+  },
+
+  "automation_landscape": {
+    "legacy_providers": [
+      {
+        "name": "Vanderlande",
+        "min_investment_usd": 500000,
+        "target_segment": "Large carriers (FedEx, UPS, Amazon)",
+        "dsp_compatible": false
+      },
+      {
+        "name": "Dematic",
+        "min_investment_usd": 1000000,
+        "target_segment": "Enterprise distribution centers",
+        "dsp_compatible": false
+      },
+      {
+        "name": "Siemens Logistics",
+        "min_investment_usd": 2000000,
+        "target_segment": "National postal services and mega-hubs",
+        "dsp_compatible": false
+      }
+    ],
+    "gap": "No pay-per-use or low-CAPEX automation solution exists for the DSP segment"
+  },
+
+  "sortlease_model": {
+    "rate_per_parcel_usd": 0.10,
+    "station_investment_usd": 100000,
+    "gross_margin_pct": 83,
+    "payback_months_per_station": 6,
+    "target_network_stations": 50,
+    "total_seed_round_usd": 5000000,
+    "annual_revenue_50_stations_usd": 54750000,
+    "annual_gross_profit_50_stations_usd": 45000000,
+    "hardware": "FlowSort S15",
+    "throughput_parcels_per_hour": 21000,
+    "ai_accuracy_pct": 99.9,
+    "footprint_sqft": 2000,
+    "operators_required": 2
+  },
+
+  "roi_by_segment": {
+    "small_dsp_5000_per_day": {
+      "daily_savings_usd": 170,
+      "annual_savings_usd": 52700,
+      "payback_months": 19.0,
+      "viable": true
+    },
+    "medium_dsp_15000_per_day": {
+      "daily_savings_usd": 550,
+      "annual_savings_usd": 170500,
+      "payback_months": 6.1,
+      "viable": true
+    },
+    "large_dsp_30000_per_day": {
+      "daily_savings_usd": 1350,
+      "annual_savings_usd": 418500,
+      "payback_months": 2.5,
+      "viable": true
+    }
+  },
+
+  "volume_growth": {
+    "us_parcel_volume_growth_annual_pct": 17,
+    "us_parcel_volume_2024_billions": 22.8,
+    "us_parcel_volume_2028_projected_billions": 42.0,
+    "ecommerce_share_of_parcels_pct": 62,
+    "same_day_delivery_growth_pct": 35
+  },
+
+  "contact": {
+    "company": "SortLease LLC",
+    "website": "https://www.sortlease.com",
+    "angel_investment": "https://www.sortlease.com/angel-investment/",
+    "join_mission": "https://www.sortlease.com/join-the-mission/",
+    "email": "info@sortlease.com",
+    "phone": "+1-406-479-0215",
+    "whatsapp": "https://wa.me/14064790215",
+    "address": "30 N Gould St Ste R, Sheridan, WY 82801, USA"
+  }
+}
