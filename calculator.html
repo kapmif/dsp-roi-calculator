@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSP Parcel Sorting ROI Calculator — SortLease</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --card: #21252f;
+    --border: rgba(255,255,255,0.1);
+    --text: #e8eaf0;
+    --muted: #8a93a8;
+    --accent: #7c6bf0;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .logo { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .logo span { color: var(--accent); }
+  .gh-link {
+    font-size: 0.82rem;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .gh-link:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── LAYOUT ── */
+  main { max-width: 1000px; margin: 0 auto; padding: 36px 20px; }
+  h1 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 32px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .card-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  /* ── INPUTS ── */
+  .field { margin-bottom: 16px; }
+  label { display: block; font-size: 0.84rem; color: var(--muted); margin-bottom: 6px; }
+  input[type="number"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 1rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus { border-color: var(--accent); }
+
+  .hint { font-size: 0.76rem; color: var(--muted); margin-top: 4px; }
+
+  /* ── BUTTON ── */
+  .calc-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .calc-btn:hover { background: #6a5ce0; transform: translateY(-1px); }
+  .calc-btn:active { transform: translateY(0); }
+
+  /* ── RESULTS ── */
+  .results { display: none; }
+  .results.show { display: block; }
+
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-label { color: var(--muted); }
+  .metric-value { font-weight: 600; color: var(--text); }
+  .metric-value.green { color: var(--green); }
+  .metric-value.amber { color: var(--amber); }
+  .metric-value.red { color: var(--red); }
+
+  /* ── VERDICT ── */
+  .verdict {
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-top: 20px;
+    border: 1px solid;
+  }
+  .verdict.good { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.3); }
+  .verdict.bad { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); }
+  .verdict-title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+  .verdict.good .verdict-title { color: var(--green); }
+  .verdict.bad .verdict-title { color: var(--red); }
+  .verdict p { font-size: 0.88rem; color: var(--muted); }
+
+  /* ── METRIC CARDS ── */
+  .metric-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .mc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .mc-number {
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .mc-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* ── FOOTER ── */
+  .footer-cta {
+    margin-top: 28px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-cta p { font-size: 0.9rem; color: var(--muted); }
+  .footer-cta strong { color: var(--text); }
+  .cta-links { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cta-link {
+    font-size: 0.84rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .cta-link.primary { background: var(--accent); color: #fff; }
+  .cta-link.primary:hover { background: #6a5ce0; }
+  .cta-link.secondary { border: 1px solid var(--border); color: var(--muted); }
+  .cta-link.secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── BREAKEVEN CHART ── */
+  #chart-wrap { margin-top: 20px; }
+  #chart-wrap canvas { width: 100% !important; }
+
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .metric-cards { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">📦 DSP ROI Calculator <span>by SortLease</span></div>
+  <a href="https://github.com/kapmif/dsp-roi-calculator" target="_blank" rel="noopener" class="gh-link">
+    ⭐ View on GitHub
+  </a>
+</header>
+
+<main>
+  <h1>Parcel Sorting ROI Calculator</h1>
+  <p class="subtitle">
+    Model the exact economics of switching from manual sorting to pay-per-parcel automation
+    at $0.10/parcel. Based on real SortLease deployment data.
+  </p>
+
+  <div class="grid">
+
+    <!-- INPUT CARD -->
+    <div class="card">
+      <div class="card-title">Your Operation</div>
+
+      <div class="field">
+        <label for="volume">Daily Parcel Volume</label>
+        <input type="number" id="volume" value="15000" min="1000" max="100000">
+        <div class="hint">Parcels sorted per operating day</div>
+      </div>
+
+      <div class="field">
+        <label for="staff">Sorting Staff (headcount)</label>
+        <input type="number" id="staff" value="8" min="1" max="50">
+      </div>
+
+      <div class="field">
+        <label for="wage">Average Hourly Wage ($)</label>
+        <input type="number" id="wage" value="20" min="10" max="60" step="0.5">
+        <div class="hint">Include part-time workers</div>
+      </div>
+
+      <div class="field">
+        <label for="hours">Operating Hours / Day</label>
+        <input type="number" id="hours" value="8" min="4" max="24" step="0.5">
+      </div>
+
+      <div class="field">
+        <label for="error_rate">Mis-sort Error Rate (%)</label>
+        <input type="number" id="error_rate" value="3" min="0" max="15" step="0.5">
+        <div class="hint">Industry average: 3%. Enter 3 for 3%.</div>
+      </div>
+
+      <button class="calc-btn" onclick="calculate()">Calculate ROI →</button>
+    </div>
+
+    <!-- RESULTS CARD -->
+    <div class="card">
+      <div class="card-title">ROI Analysis</div>
+
+      <!-- Default state -->
+      <div id="placeholder" style="color:var(--muted); font-size:0.92rem; padding:20px 0; text-align:center;">
+        <div style="font-size:2.5rem; margin-bottom:12px;">📊</div>
+        Enter your operation details and click Calculate.
+      </div>
+
+      <!-- Results state -->
+      <div id="results" class="results">
+
+        <div class="metric-cards" id="metric-cards"></div>
+
+        <div id="cost-breakdown">
+          <!-- populated by JS -->
+        </div>
+
+        <div id="verdict">
+          <!-- populated by JS -->
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER CTA -->
+  <div class="footer-cta">
+    <div>
+      <p>
+        <strong>SortLease</strong> — First pay-per-parcel sorting network for US DSPs.
+        $5M seed round open · 83% gross margin · ~6-month payback per station.
+      </p>
+    </div>
+    <div class="cta-links">
+      <a href="https://www.sortlease.com/angel-investment/" target="_blank" rel="noopener" class="cta-link primary">
+        💜 Angel Investment →
+      </a>
+      <a href="https://www.sortlease.com/join-the-mission/" target="_blank" rel="noopener" class="cta-link secondary">
+        Join the Mission →
+      </a>
+      <a href="https://www.sortlease.com" target="_blank" rel="noopener" class="cta-link secondary">
+        sortlease.com →
+      </a>
+    </div>
+  </div>
+</main>
+
+<script>
+// ── constants ──
+const SORTLEASE_RATE    = 0.10;
+const STATION_INVEST    = 100_000;
+const OVERHEAD_MULT     = 1.25;
+const DAYS_PER_YEAR     = 310;
+const ERROR_COST        = 10.0;
+
+function fmt$(n)   { return '$' + Math.round(n).toLocaleString(); }
+function fmtN(n)   { return Math.round(n).toLocaleString(); }
+function fmtD(n,d) { return n.toFixed(d); }
+
+function calculate() {
+  const volume     = +document.getElementById('volume').value;
+  const staff      = +document.getElementById('staff').value;
+  const wage       = +document.getElementById('wage').value;
+  const hours      = +document.getElementById('hours').value;
+  const errorRate  = +document.getElementById('error_rate').value / 100;
+
+  if (!volume || !staff || !wage || !hours) {
+    alert('Please fill in all fields.');
+    return;
+  }
+
+  // ── calculations ──
+  const dailyLabor   = staff * wage * hours * OVERHEAD_MULT;
+  const dailyErrors  = volume * errorRate * ERROR_COST;
+  const totalManual  = dailyLabor + dailyErrors;
+  const annualManual = totalManual * DAYS_PER_YEAR;
+
+  const dailySL   = volume * SORTLEASE_RATE;
+  const annualSL  = dailySL * DAYS_PER_YEAR;
+
+  const dailySave   = totalManual - dailySL;
+  const monthlySave = dailySave * 30;
+  const annualSave  = dailySave * DAYS_PER_YEAR;
+
+  let payback = null;
+  if (dailySave > 0) payback = STATION_INVEST / (dailySave * 30);
+
+  const fiveYearNet = (annualSave * 5) - STATION_INVEST;
+  const roi5yr      = dailySave > 0 ? fiveYearNet / STATION_INVEST * 100 : -100;
+
+  const variableSave = SORTLEASE_RATE - (errorRate * ERROR_COST);
+  const breakeven    = variableSave > 0 ? Math.ceil(dailyLabor / variableSave) : 9_999_999;
+  const beneficial   = dailySave > 0;
+
+  // ── render metric cards ──
+  const mc = document.getElementById('metric-cards');
+  mc.innerHTML = `
+    <div class="mc">
+      <div class="mc-number" style="color:${beneficial ? 'var(--green)' : 'var(--red)'}">
+        ${beneficial ? fmt$(dailySave) : '—'}
+      </div>
+      <div class="mc-label">Daily Savings</div>
+    </div>
+    <div class="mc">
+      <div class="mc-number" style="color:${beneficial && payback < 12 ? 'var(--green)' : 'var(--amber)'}">
+        ${payback ? fmtD(payback,1) + ' mo' : '—'}
+      </div>
+      <div class="mc-label">Payback Period</div>
+    </div>
+    <div class="mc">
+      <div class="mc-number" style="color:${beneficial ? 'var(--green)' : 'var(--red)'}">
+        ${beneficial ? fmt$(annualSave) : '—'}
+      </div>
+      <div class="mc-label">Annual Savings</div>
+    </div>
+    <div class="mc">
+      <div class="mc-number" style="color:var(--blue)">
+        ${fmtN(breakeven)}
+      </div>
+      <div class="mc-label">Break-even Volume</div>
+    </div>
+  `;
+
+  // ── render cost breakdown ──
+  const cb = document.getElementById('cost-breakdown');
+  cb.innerHTML = `
+    <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);font-weight:700;margin-bottom:8px;">Cost Breakdown</div>
+
+    <div class="metric-row">
+      <span class="metric-label">Manual labor/day (w/ overhead)</span>
+      <span class="metric-value">${fmt$(dailyLabor)}</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Error correction/day</span>
+      <span class="metric-value">${fmt$(dailyErrors)}</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Total manual cost/day</span>
+      <span class="metric-value">${fmt$(totalManual)}</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">SortLease cost/day ($0.10 × ${fmtN(volume)})</span>
+      <span class="metric-value">${fmt$(dailySL)}</span>
+    </div>
+    ${beneficial ? `
+    <div class="metric-row">
+      <span class="metric-label">Annual savings</span>
+      <span class="metric-value green">${fmt$(annualSave)}</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">5-year net benefit</span>
+      <span class="metric-value green">${fmt$(fiveYearNet)}</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">5-year ROI</span>
+      <span class="metric-value green">${Math.round(roi5yr)}%</span>
+    </div>
+    ` : `
+    <div class="metric-row">
+      <span class="metric-label">Shortfall at current volume</span>
+      <span class="metric-value red">${fmt$(Math.abs(dailySave))}/day</span>
+    </div>
+    `}
+  `;
+
+  // ── render verdict ──
+  const vd = document.getElementById('verdict');
+  if (beneficial) {
+    const pctAbove = ((volume - breakeven) / breakeven * 100).toFixed(0);
+    vd.innerHTML = `
+      <div class="verdict good">
+        <div class="verdict-title">✅ SortLease is cost-effective for your operation</div>
+        <p>You're ${pctAbove}% above the ${fmtN(breakeven)}/day break-even. Payback in ${fmtD(payback,1)} months.
+        Contact SortLease to discuss deployment at your facility.</p>
+      </div>
+    `;
+  } else {
+    vd.innerHTML = `
+      <div class="verdict bad">
+        <div class="verdict-title">⚠️ Not cost-effective at current volume</div>
+        <p>Break-even requires ${fmtN(breakeven)} parcels/day. You're processing ${fmtN(volume)}.
+        At ${fmtN(breakeven)}+ parcels/day, SortLease pays back in under 12 months.
+        Contact us to discuss future scaling plans.</p>
+      </div>
+    `;
+  }
+
+  // ── show results ──
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('results').classList.add('show');
+}
+
+// Auto-calculate on load with defaults
+window.addEventListener('load', () => calculate());
+
+// Re-calculate on any input change
+['volume','staff','wage','hours','error_rate'].forEach(id => {
+  document.getElementById(id).addEventListener('input', calculate);
+});
+</script>
+
+</body>
+</html>
